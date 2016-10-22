@@ -18,7 +18,7 @@ class Business: NSObject {
     let reviewCount: NSNumber?
     
     init(dictionary: NSDictionary) {
-        print("Business Dictionary \(dictionary)")
+        //print("Business Dictionary \(dictionary)")
         name = dictionary["name"] as? String
         
         let imageURLString = dictionary["image_url"] as? String
@@ -79,6 +79,7 @@ class Business: NSObject {
     class func businesses(array: [NSDictionary]) -> [Business] {
         var businesses = [Business]()
         for dictionary in array {
+            //print("dictionary: \(dictionary)")
             let business = Business(dictionary: dictionary)
             businesses.append(business)
         }
@@ -89,7 +90,11 @@ class Business: NSObject {
         YelpClient.sharedInstance.searchWithTerm(term, completion: completion)
     }
     
-    class func searchWithTerm(_ term: String, sort: YelpSortMode?, categories: [String]?, deals: Bool?, completion: @escaping ([Business]?, Error?) -> Void) -> Void {
-        YelpClient.sharedInstance.searchWithTerm(term, sort: sort, categories: categories, deals: deals, completion: completion)
+    class func searchWithTerm(_ term: String, limit: Int, offset: Int, completion: @escaping ([Business]?, Error?) -> Void) {
+        YelpClient.sharedInstance.searchWithTerm(term, limit: limit, offset: offset, completion: completion)
+    }
+    
+    class func searchWithTerm(_ term: String, limit: Int, offset: Int, sort: YelpSortMode?, categories: [String]?, deals: Bool?, completion: @escaping ([Business]?, Error?) -> Void) -> Void {
+        YelpClient.sharedInstance.searchWithTerm(term, limit: limit, offset: offset, sort: sort, categories: categories, deals: deals, completion: completion)
     }
 }

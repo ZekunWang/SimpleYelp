@@ -7,17 +7,46 @@
 //
 
 import UIKit
+import MapKit
+import CoreLocation
 
 class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate {
-
-    var businesses: [Business]!
-    var businessesRaw: [Business]!
+    
     @IBOutlet var tableView: UITableView!
+    @IBOutlet var mapView: MKMapView!
+    @IBOutlet var viewSwitchBarButton: UIBarButtonItem!
+    
+    let flipDuration: Double = 1
+    var isTable: Bool = true
+    var businesses: [Business]!
     var searchBar: UISearchBar!
     var tableRefreshControl: UIRefreshControl!
     
+    var isMoreDataLoading = false
+    let limit = 20
+    var offset = 0
+    var searchText = ""
+    var loadingMoreView: InfiniteScrollActivityView?
+    var rightBarButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        
+//        rightBarButton = UIButton(type: .custom)
+//        rightBarButton.setTitle("Map", for: .normal)
+//        rightBarButton.frame = CGRect(x: 0, y: 0, width: 38, height: 30)
+//        rightBarButton.addTarget(self, action: #selector(self.onFlipView), for: .touchUpInside)
+//        viewSwitchBarButton.customView = rightBarButton
+        //let item1 = UIBarButtonItem(customView: rightBarButton)
+        
+//        rightBarButton = UIButton(type: .custom)
+//        rightBarButton.setTitle("Map", for: .normal)
+//        rightBarButton.frame = CGRect(x: 0, y: 0, width: 38, height: 30)
+//        rightBarButton.addTarget(self, action: #selector(self.onFlipView), for: .touchUpInside)
+//        let item1 = UIBarButtonItem(customView: rightBarButton)
+        
+        //self.navigationItem.setRightBarButtonItems([item1], animated: true)
         
         // Initialize a search bar and put in navigation view
         searchBar = UISearchBar()
@@ -25,22 +54,32 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.titleView = searchBar
         
         searchBar.delegate = self
-        businesses = businessesRaw
 
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
         
+        // Setup map view
+        let centerLocation = CLLocation(latitude: 37.7833, longitude: -122.4167)
+        goToLocation(location: centerLocation)
+        
+        // Set up infinite scroll loading indicator
+        let frame = CGRect(x: 0, y: tableView.contentSize.height, width: tableView.bounds.size.width, height: InfiniteScrollActivityView.DEFAULT_HEIGHT)
+        loadingMoreView = InfiniteScrollActivityView(frame: frame)
+        loadingMoreView!.isHidden = true
+        tableView.addSubview(loadingMoreView!)
+        
+        var insets = tableView.contentInset
+        insets.bottom += InfiniteScrollActivityView.DEFAULT_HEIGHT
+        tableView.contentInset = insets
+        
         // Clear keyboard when scroll
         tableView.keyboardDismissMode = .onDrag
-        
-        Business.searchWithTerm("Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
-            self.businessesRaw = businesses
-            self.businesses = self.businessesRaw
-            self.tableView.reloadData()
-        })
 
+        businesses = [Business]()
+        loadDataWithOffset(searchText:searchText)
+        
 /* Example of Yelp search with more search options specified
         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
             self.businesses = businesses
@@ -53,8 +92,25 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 */
     }
     
-    var isMoreDataLoading = false
+    func goToLocation(location: CLLocation) {
+        let span = MKCoordinateSpanMake(0.1, 0.1)
+        let region = MKCoordinateRegionMake(location.coordinate, span)
+        mapView.setRegion(region, animated: true)
+    }
     
+    @IBAction func onFlipView(_ sender: AnyObject) {
+        if (isTable) {
+            viewSwitchBarButton.title = "List"
+//            rightBarButton.setTitle("List", for: .normal)
+            UIView.transition(from: tableView, to: mapView, duration: flipDuration, options: UIViewAnimationOptions.transitionFlipFromLeft, completion: nil)
+        } else {
+            viewSwitchBarButton.title = "Map"
+//            rightBarButton.setTitle("Map", for: .normal)
+            UIView.transition(from: mapView, to: tableView, duration: flipDuration, options: UIViewAnimationOptions.transitionFlipFromRight, completion: nil)
+        }        
+        
+        isTable = !isTable
+    }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if (!isMoreDataLoading) {
             let scrollViewContentHeight = tableView.contentSize.height
@@ -62,9 +118,25 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
             if (scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
                 isMoreDataLoading = true
                 
-                // ... Code to load more results ...
+                // Update position of loadingMoreView, and start loading indicator
+                let frame = CGRect(x: 0, y: tableView.contentSize.height, width: tableView.bounds.size.width, height: InfiniteScrollActivityView.DEFAULT_HEIGHT)
+                loadingMoreView?.frame = frame
+                loadingMoreView!.startAnimating()
+                
+                loadDataWithOffset(searchText: searchText)
             }
         }
+    }
+    
+    func loadDataWithOffset(searchText: String) {
+        Business.searchWithTerm(searchText, limit: limit, offset: offset, completion: { (newBusinesses: [Business]?, error: Error?) -> Void in
+            self.businesses.append(contentsOf: newBusinesses!)
+            
+            self.offset += self.limit
+            self.loadingMoreView!.stopAnimating()
+            self.isMoreDataLoading = false
+            self.tableView.reloadData()
+        })
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -75,15 +147,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         searchBar.showsCancelButton = false;
         searchBar.text = ""
         searchBar.resignFirstResponder()
-        businesses = businessesRaw
-        tableView.reloadData()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        businesses = searchText.isEmpty ? businessesRaw : businessesRaw.filter({(businessRawItem: Business) -> Bool in
-            return businessRawItem.name!.range(of: searchText, options: .caseInsensitive) != nil
-        })
-        tableView.reloadData()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
