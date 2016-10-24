@@ -16,9 +16,10 @@ class Business: NSObject {
     let distance: String?
     let ratingImageURL: URL?
     let reviewCount: NSNumber?
+    let price: String
+    let coordinate: [Double]
     
     init(dictionary: NSDictionary) {
-        //print("Business Dictionary \(dictionary)")
         name = dictionary["name"] as? String
         
         let imageURLString = dictionary["image_url"] as? String
@@ -30,6 +31,7 @@ class Business: NSObject {
         
         let location = dictionary["location"] as? NSDictionary
         var address = ""
+        var coordinate = [Double]()
         if location != nil {
             let addressArray = location!["address"] as? NSArray
             if addressArray != nil && addressArray!.count > 0 {
@@ -43,7 +45,18 @@ class Business: NSObject {
                 }
                 address += neighborhoods![0] as! String
             }
+            
+            let coord = location!["coordinate"] as? NSDictionary
+            
+            let latitude = coord?["latitude"] as? Double
+            let longitude = coord?["longitude"] as? Double
+            
+            if latitude != nil && longitude != nil {
+                coordinate.append(latitude!)
+                coordinate.append(longitude!)
+            }
         }
+        self.coordinate = coordinate
         self.address = address
         
         let categoriesArray = dictionary["categories"] as? [[String]]
@@ -73,7 +86,14 @@ class Business: NSObject {
             ratingImageURL = nil
         }
         
-        reviewCount = dictionary["review_count"] as? NSNumber
+        self.reviewCount = dictionary["review_count"] as? NSNumber
+        self.price = Business.getRandomPrice()
+    }
+
+    static let prices = ["$", "$$", "$$$", "$$$$"]
+    static func getRandomPrice() -> String {
+        let index = Int(arc4random_uniform(UInt32(Business.prices.count)))
+        return Business.prices[index]
     }
     
     class func businesses(array: [NSDictionary]) -> [Business] {
@@ -86,15 +106,7 @@ class Business: NSObject {
         return businesses
     }
     
-    class func searchWithTerm(_ term: String, completion: @escaping ([Business]?, Error?) -> Void) {
-        YelpClient.sharedInstance.searchWithTerm(term, completion: completion)
-    }
-    
-    class func searchWithTerm(_ term: String, limit: Int, offset: Int, completion: @escaping ([Business]?, Error?) -> Void) {
-        YelpClient.sharedInstance.searchWithTerm(term, limit: limit, offset: offset, completion: completion)
-    }
-    
-    class func searchWithTerm(_ term: String, limit: Int, offset: Int, sort: YelpSortMode?, categories: [String]?, deals: Bool?, completion: @escaping ([Business]?, Error?) -> Void) -> Void {
-        YelpClient.sharedInstance.searchWithTerm(term, limit: limit, offset: offset, sort: sort, categories: categories, deals: deals, completion: completion)
+    class func searchWithTerm(_ parameters: [String : AnyObject], completion: @escaping ([Business]?, Error?) -> Void) -> Void {
+        YelpClient.sharedInstance.searchWithTerm(parameters, completion: completion)
     }
 }

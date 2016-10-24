@@ -8,19 +8,31 @@
 
 import UIKit
 
-class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
 
+    let switchCell = "SwitchCell"
+    let checkCell = "CheckCell"
+    let segmentedControllCell = "SegmentedControlCell"
+    let headerView = "TableSectionHeader"
+    
     @IBOutlet var tableView: UITableView!
     
-    var categories: [[String : String]]!
+    var appFilters: AppFilters!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.estimatedRowHeight = 120
+        tableView.rowHeight = UITableViewAutomaticDimension
         
-        categories = yelpCategories()
+        tableView.register(UINib(nibName: self.checkCell, bundle: nil), forCellReuseIdentifier: self.checkCell)
+        tableView.register(UINib(nibName: self.switchCell, bundle: nil), forCellReuseIdentifier: self.switchCell)
+        tableView.register(UINib(nibName: self.segmentedControllCell, bundle: nil), forCellReuseIdentifier: self.segmentedControllCell)
+        tableView.register(UINib(nibName: self.headerView, bundle: nil), forHeaderFooterViewReuseIdentifier: self.headerView)
+                
+        appFilters = AppFilters.instance
         
         // Do any additional setup after loading the view.
     }
@@ -35,48 +47,156 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @IBAction func onSearch(_ sender: AnyObject) {
+        AppFilters.instance.loadAppFilters(appFilters: appFilters)
+        AppFilters.hasUpdated = true
         dismiss(animated: true, completion: nil)
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+    // MARK - TableViewDelegate
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return appFilters.filters.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let filter: Filter = appFilters.filters[section]
+        if filter.expanded {
+            print("section: \(section) options: \(filter.options.count)")
+            return filter.options.count
+        } else if filter.type == .single {
+            return 1
+        } else if filter.type == .multiple {
+            return filter.visibleCount + 1
+        } else if filter.type == .default {
+            print("section: \(section) options: \(filter.visibleCount)")
+            return filter.visibleCount
+        }
+        return filter.options.count
+    }
+    
+//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        return appFilters.filters[section].label
+//    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = self.tableView.dequeueReusableHeaderFooterView(withIdentifier: self.headerView)
+        print("header: \(header)")
+        let cell = header as! TableSectionHeader
+        let title =  self.appFilters.filters[section].label
         
-        cell.switchLabel.text = categories[indexPath.row]["name"]
-        
+        cell.title = title
         return cell
     }
     
-    func yelpCategories() -> [[String : String]] {
-        return [["name" : "Afghan", "code" : "afghani"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "American, New", "code" : "newamerican"],
-                ["name" : "American, Traditional", "code" : "tradamerican"],
-                ["name" : "Arabian", "code" : "arabian"],
-                ["name" : "Argentine", "code" : "argentine"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"],
-                ["name" : "African", "code" : "african"]]
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let filter: Filter = self.appFilters.filters[indexPath.section]
+        
+        print("section: \(indexPath.section) type: \(filter.type)")
+        print("options: \(filter.options.count) visibleCount: \(filter.visibleCount), row: \(indexPath.row)")
+
+        switch filter.type {
+        case .single:
+            print("single")
+            let cell = tableView.dequeueReusableCell(withIdentifier: self.checkCell, for: indexPath) as! CheckCell
+            cell.expanded = filter.expanded
+            if filter.expanded {
+                let option: Option! = indexPath.row < filter.options.count ? filter.options[indexPath.row] : nil
+                print("option: \(option != nil ? option.label : "nil")")
+                cell.option = option
+            } else {
+                let selectedOption = filter.selectedOption
+                let option: Option! = indexPath.row < filter.visibleCount ? filter.options[selectedOption] : nil
+                print("option: \(option != nil ? option.label : "nil")")
+                cell.option = option
+            }
+            return cell
+        case .multiple:
+            print("multiple")
+            let cell = tableView.dequeueReusableCell(withIdentifier: self.switchCell, for: indexPath) as! SwitchCell
+            if filter.expanded {
+                let option: Option! = indexPath.row < filter.options.count ? filter.options[indexPath.row] : nil
+                print("option: \(option != nil ? option.label : "nil")")
+                cell.option = option
+            } else {
+                let option: Option! = indexPath.row < filter.visibleCount ? filter.options[indexPath.row] : nil
+                print("option: \(option != nil ? option.label : "nil")")
+                cell.option = option
+            }
+            return cell
+        default:
+            print("default")
+            let option: Option! = indexPath.row < filter.options.count ? filter.options[indexPath.row] : nil
+            
+            if option.type == .segmentedControl {
+                let cell = tableView.dequeueReusableCell(withIdentifier: self.segmentedControllCell, for: indexPath) as! SegmentedControlCell
+                print("option: \(option != nil ? option.label : "nil")")
+                cell.option = option
+                return cell
+            } else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: self.switchCell, for: indexPath) as! SwitchCell
+                print("option: \(option != nil ? option.label : "nil")")
+                cell.indexPath = indexPath
+                cell.delegate = self
+                cell.option = option
+                return cell
+            }
+        }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let filter: Filter = self.appFilters.filters[indexPath.section]
+
+        switch filter.type {
+        case .single:
+            if filter.expanded {
+                let previousOption = filter.selectedOption
+                let option: Option! = indexPath.row < filter.options.count ? filter.options[indexPath.row] : nil
+                if (previousOption != -1) {
+                    filter.options[previousOption].selected = false
+                }
+                option.selected = true
+            }
+            
+            filter.expanded = !filter.expanded
+            
+            self.tableView.reloadSections(NSMutableIndexSet(index: indexPath.section) as IndexSet, with: .automatic)
+        case .multiple:
+            var option: Option! = indexPath.row < filter.visibleCount ? filter.options[indexPath.row] : nil
+            if filter.expanded {
+                option = indexPath.row < filter.options.count ? filter.options[indexPath.row] : nil
+            }
+            
+            if option != nil {
+                option.selected = !option.selected
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            } else {
+                filter.expanded = true
+                self.tableView.reloadSections(NSMutableIndexSet(index: indexPath.section) as IndexSet, with: .automatic)
+            }
+        default:
+            let option: Option! = indexPath.row < filter.options.count ? filter.options[indexPath.row] : nil
+            
+            if option.type == .switch {
+                if indexPath.section == 0 {
+                    option.selected = !option.selected
+                    filter.expanded = !filter.expanded
+                    self.tableView.reloadSections(NSMutableIndexSet(index: indexPath.section) as IndexSet, with: .automatic)
+                } else {
+                    option.selected = !option.selected
+                    self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                }
+            }
+        }
+    }
+    
+    func onSwitchDone(_ switchCell: SwitchCell) {
+        if let indexPath = switchCell.indexPath {
+            print("section: \(indexPath.section)")
+            let filter = appFilters.filters[indexPath.section]
+            filter.expanded = !filter.expanded
+            self.tableView.reloadSections(NSMutableIndexSet(index: indexPath.section) as IndexSet, with: .automatic)
+        }
+    }
+    
     /*
     // MARK: - Navigation
 

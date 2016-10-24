@@ -17,6 +17,7 @@ class BusinessCell: UITableViewCell {
     @IBOutlet var reviewCountLabel: UILabel!
     @IBOutlet var addressLabel: UILabel!
     @IBOutlet var categoriesLabel: UILabel!
+    @IBOutlet var priceLabel: UILabel!
     
     var business: Business! {
         didSet {
@@ -27,6 +28,7 @@ class BusinessCell: UITableViewCell {
             reviewCountLabel.text = "\(business.reviewCount!) Reviews"
             addressLabel.text = business.address
             categoriesLabel.text = business.categories
+            priceLabel.text = business.price
         }
     }
     
