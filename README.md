@@ -22,7 +22,7 @@ The following **optional** features are implemented:
 - [x] Search results page
    - [x] Infinite scroll for restaurant results.
    - [x] Implement map view of restaurant results.
-- [ ] Filter page
+- [x] Filter page
    - [ ] Implement a custom switch instead of the default UISwitch.
    - [x] Distance filter should expand as in the real Yelp app
    - [x] Categories should show a subset of the full list with a "See All" row to expand. Category list is [here](http://www.yelp.com/developers/documentation/category_list).
@@ -30,12 +30,19 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-- [ ] List anything else that you can get done to improve the app functionality!
+- [x] Implement search result list pull to refresh
+- [x] Customize navigation bar
+- [x] Add flip animation when switch between list and map
+- [x] Fake prices since Yelp API does not provide prices
+- [x] Jump to detail page from map pins
+- [x] Fake UI of filters not supported in Yelp search API
+- [x] Customize launch page and add app icon
+- [x] Polish UI of detail page
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-1.
-2.
+1. Further implementation of map feature
+2. The efficient and good practices to do OOD with Swift
 
 ## Video Walkthrough
 

@@ -12,7 +12,8 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
 
     let switchCell = "SwitchCell"
     let checkCell = "CheckCell"
-    let segmentedControllCell = "SegmentedControlCell"
+    let segControllCell = "SegControlCell"
+    let textCell = "TextCell"
     let headerView = "TableSectionHeader"
     
     @IBOutlet var tableView: UITableView!
@@ -29,7 +30,8 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         
         tableView.register(UINib(nibName: self.checkCell, bundle: nil), forCellReuseIdentifier: self.checkCell)
         tableView.register(UINib(nibName: self.switchCell, bundle: nil), forCellReuseIdentifier: self.switchCell)
-        tableView.register(UINib(nibName: self.segmentedControllCell, bundle: nil), forCellReuseIdentifier: self.segmentedControllCell)
+        tableView.register(UINib(nibName: self.segControllCell, bundle: nil), forCellReuseIdentifier: self.segControllCell)
+        tableView.register(UINib(nibName: self.textCell, bundle: nil), forCellReuseIdentifier: self.textCell)
         tableView.register(UINib(nibName: self.headerView, bundle: nil), forHeaderFooterViewReuseIdentifier: self.headerView)
                 
         appFilters = AppFilters.instance
@@ -127,7 +129,12 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
             let option: Option! = indexPath.row < filter.options.count ? filter.options[indexPath.row] : nil
             
             if option.type == .segmentedControl {
-                let cell = tableView.dequeueReusableCell(withIdentifier: self.segmentedControllCell, for: indexPath) as! SegmentedControlCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: self.segControllCell, for: indexPath) as! SegControlCell
+                print("option: \(option != nil ? option.label : "nil")")
+                cell.option = option
+                return cell
+            } else if option.type == .text {
+                let cell = tableView.dequeueReusableCell(withIdentifier: self.textCell, for: indexPath) as! TextCell
                 print("option: \(option != nil ? option.label : "nil")")
                 cell.option = option
                 return cell

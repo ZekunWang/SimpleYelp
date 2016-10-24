@@ -29,6 +29,10 @@
 		29C0E5ED1DBD86E400376AAC /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C0E5EC1DBD86E400376AAC /* MapViewController.swift */; };
 		29C0E5EF1DBD9C4A00376AAC /* BusinessDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C0E5EE1DBD9C4A00376AAC /* BusinessDetailViewController.swift */; };
 		29E31ECC1DB887860094452D /* InfiniteScrollActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E31ECB1DB887860094452D /* InfiniteScrollActivityView.swift */; };
+		29FC21421DBE4E9000CDF0F1 /* SegControlCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FC21401DBE4E9000CDF0F1 /* SegControlCell.swift */; };
+		29FC21431DBE4E9000CDF0F1 /* SegControlCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 29FC21411DBE4E9000CDF0F1 /* SegControlCell.xib */; };
+		29FC21461DBECAF500CDF0F1 /* TextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FC21441DBECAF500CDF0F1 /* TextCell.swift */; };
+		29FC21471DBECAF500CDF0F1 /* TextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 29FC21451DBECAF500CDF0F1 /* TextCell.xib */; };
 		31D95BCBCA38716181E686D3 /* Pods_Yelp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C79C0AC126EDAA235847CEA2 /* Pods_Yelp.framework */; };
 		47848697133B87663A122E3D /* Pods_YelpTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A1000F3975EB43318C1D4FA /* Pods_YelpTests.framework */; };
 /* End PBXBuildFile section */
@@ -71,6 +75,10 @@
 		29C0E5EC1DBD86E400376AAC /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		29C0E5EE1DBD9C4A00376AAC /* BusinessDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusinessDetailViewController.swift; sourceTree = "<group>"; };
 		29E31ECB1DB887860094452D /* InfiniteScrollActivityView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfiniteScrollActivityView.swift; sourceTree = "<group>"; };
+		29FC21401DBE4E9000CDF0F1 /* SegControlCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegControlCell.swift; sourceTree = "<group>"; };
+		29FC21411DBE4E9000CDF0F1 /* SegControlCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SegControlCell.xib; sourceTree = "<group>"; };
+		29FC21441DBECAF500CDF0F1 /* TextCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextCell.swift; sourceTree = "<group>"; };
+		29FC21451DBECAF500CDF0F1 /* TextCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextCell.xib; sourceTree = "<group>"; };
 		5871D66103F8E8D78915F798 /* Pods-YelpTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YelpTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-YelpTests/Pods-YelpTests.debug.xcconfig"; sourceTree = "<group>"; };
 		883322706A784248B16F444A /* Pods-Yelp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yelp.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yelp/Pods-Yelp.release.xcconfig"; sourceTree = "<group>"; };
 		9B128C050DE78660DE2A8E75 /* Pods-YelpTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YelpTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-YelpTests/Pods-YelpTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -201,6 +209,10 @@
 				29C0E5E01DBD2EAD00376AAC /* TableSectionHeader.swift */,
 				29C0E5E11DBD2EAD00376AAC /* TableSectionHeader.xib */,
 				29C0E5E81DBD3B9000376AAC /* SegmentedControlCell.swift */,
+				29FC21401DBE4E9000CDF0F1 /* SegControlCell.swift */,
+				29FC21411DBE4E9000CDF0F1 /* SegControlCell.xib */,
+				29FC21441DBECAF500CDF0F1 /* TextCell.swift */,
+				29FC21451DBECAF500CDF0F1 /* TextCell.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -319,8 +331,10 @@
 				29C0E5EB1DBD3B9000376AAC /* BusinessCell.xib in Resources */,
 				2908735D1DBC7D3300D8CA95 /* CheckCell.xib in Resources */,
 				222D8A6019CCF9F900D2DB53 /* Main.storyboard in Resources */,
+				29FC21431DBE4E9000CDF0F1 /* SegControlCell.xib in Resources */,
 				290873591DBC454800D8CA95 /* SwitchCell.xib in Resources */,
 				29C0E5E31DBD2EAD00376AAC /* TableSectionHeader.xib in Resources */,
+				29FC21471DBECAF500CDF0F1 /* TextCell.xib in Resources */,
 				222D8A6519CCF9F900D2DB53 /* LaunchScreen.xib in Resources */,
 				222D8A6219CCF9F900D2DB53 /* Images.xcassets in Resources */,
 			);
@@ -440,12 +454,14 @@
 				290873581DBC454800D8CA95 /* SwitchCell.swift in Sources */,
 				29C0E5EF1DBD9C4A00376AAC /* BusinessDetailViewController.swift in Sources */,
 				22AAAA9C1AEA1EC300A544AF /* BusinessesViewController.swift in Sources */,
+				29FC21421DBE4E9000CDF0F1 /* SegControlCell.swift in Sources */,
 				29C0E5ED1DBD86E400376AAC /* MapViewController.swift in Sources */,
 				29C0E5EA1DBD3B9000376AAC /* SegmentedControlCell.swift in Sources */,
 				2989B29F1DAB52810036F479 /* FiltersViewController.swift in Sources */,
 				22AAAA991AEA0A9700A544AF /* Business.swift in Sources */,
 				222D8A7D19CCFAE000D2DB53 /* YelpClient.swift in Sources */,
 				290873551DBBF28E00D8CA95 /* AppFilters.swift in Sources */,
+				29FC21461DBECAF500CDF0F1 /* TextCell.swift in Sources */,
 				222D8A5B19CCF9F900D2DB53 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

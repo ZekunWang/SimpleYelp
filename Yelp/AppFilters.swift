@@ -15,7 +15,8 @@ class AppFilters {
             label: "",
             options: [
                 Option(label: "Order Pickup or Delivery", value: "", type: .switch),
-                Option(label: "", value: "", type: .segmentedControl)
+                Option(label: "", value: "", type: .segmentedControl),
+                Option(label: "", value: "", type: .text)
             ],
             type: .default
         ),
@@ -306,7 +307,7 @@ class Filter {
 }
 
 enum OptionType {
-    case `switch`, check, segmentedControl
+    case `switch`, check, segmentedControl, text
 }
 
 class Option {

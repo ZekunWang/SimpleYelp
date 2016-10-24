@@ -30,7 +30,7 @@ class SwitchCell: UITableViewCell {
                 self.seeAllLabel.isHidden = false
             } else {
                 self.optionLabel.text = option.label
-                self.optionSwitch.isOn = option.selected
+                self.optionSwitch.setOn(option.selected, animated: true)
                 
                 self.optionLabel.isHidden = false
                 self.optionSwitch.isHidden = false
